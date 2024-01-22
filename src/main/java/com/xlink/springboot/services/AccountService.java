@@ -10,4 +10,9 @@ import java.util.Map;
 public class AccountService {
 
     private final Map<Long, Account> accounts = new HashMap<>();
+
+    public Account getAccount(Long id) {
+        return accounts.get(id);
+    }
+
 }
