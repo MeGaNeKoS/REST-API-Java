@@ -23,4 +23,18 @@ public class AccountService {
         accounts.put(account.getId(), account);
         return account;
     }
+
+    public Account updateAccount(Long id, @NotNull Account account) {
+        Account existingAccount = accounts.get(id);
+        if (existingAccount == null) {
+            return null;
+        }
+        existingAccount.setName(account.getName());
+        existingAccount.setDescription(account.getDescription());
+        return existingAccount;
+    }
+
+    public void deleteAccount(Long id) {
+        accounts.remove(id);
+    }
 }

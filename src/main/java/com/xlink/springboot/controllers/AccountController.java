@@ -31,4 +31,19 @@ public class AccountController {
         Account createdAccount = accountService.createAccount(account);
         return ResponseEntity.ok(createdAccount);
     }
+
+    @PutMapping
+    public ResponseEntity<Account> updateAccount(@RequestParam Long id, @RequestBody Account account) throws CrudException {
+        Account updatedAccount = accountService.updateAccount(id, account);
+        if (updatedAccount == null) {
+            throw new CrudException(CrudException.ExceptionType.DataNotFound, String.format("Account with id %d not found.", id));
+        }
+        return ResponseEntity.ok(updatedAccount);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAccount(@RequestParam Long id) {
+        accountService.deleteAccount(id);
+        return ResponseEntity.ok().build();
+    }
 }
