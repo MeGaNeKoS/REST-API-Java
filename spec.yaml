@@ -1,0 +1,445 @@
+openapi: 3.0.3
+info:
+  title: Account
+  version: 1.0.0
+  contact: {}
+servers:
+  - url: http://localhost:8080
+
+components:
+  schemas:
+    Account:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        name:
+          type: string
+          example: John Doe
+        description:
+          type: string
+          example: Account description
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 404
+        errors:
+          type: object
+          properties:
+            exception:
+              type: string
+              example: AccountNotFoundException
+            message:
+              type: string
+              example: Account with id 20 not found.
+        succeeded:
+          type: boolean
+          example: false
+    SampleAccount:
+      type: object
+      properties:
+        accountName:
+          type: string
+          example: '0000'
+        balance:
+          type: number
+          example: 3
+        childs:
+          type: array
+          items:
+            $ref: '#/components/schemas/SampleAccount'
+      example:
+        accountName: '0000'
+        balance: 3
+        childs:
+          - accountName: '0002'
+            balance: 2
+            childs: null
+
+paths:
+  /account:
+    get:
+      summary: Get
+      description: Get
+      tags:
+        - Account Management
+      operationId: getAccount
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: string
+            example: '1'
+      responses:
+        '200':
+          description: '200'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+              examples:
+                '200':
+                  value:
+                    description: abcde
+                    id: 1
+                    name: testing
+        '404':
+          description: '404'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                '404':
+                  value:
+                    code: 404
+                    errors:
+                      exception: com.xlink.springboot.exceptions.CrudException
+                      message: Account with id 20 not found.
+                    succeeded: false
+    post:
+      summary: Create
+      description: Create
+      tags:
+        - Account Management
+      operationId: createAccount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                  example: abcde
+                name:
+                  type: string
+                  example: testing
+            examples:
+              Create:
+                value:
+                  description: abcde
+                  name: testing
+      responses:
+        '200':
+          description: '200'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+              examples:
+                '200':
+                  value:
+                    description: abcde
+                    id: 1
+                    name: testing
+    put:
+      summary: Put
+      description: Put
+      tags:
+        - Account Management
+      operationId: putAccount
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: string
+            example: '1'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: John Doe - Updated
+                description:
+                  type: string
+                  example: Updated account description
+            examples:
+              Put:
+                value:
+                  description: def
+                  name: testing2
+      responses:
+        '200':
+          description: '200'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+              examples:
+                '200':
+                  value:
+                    description: def
+                    id: 1
+                    name: testing2
+        '404':
+          description: '400'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                '400':
+                  value:
+                    code: 404
+                    errors:
+                      exception: com.xlink.springboot.exceptions.CrudException
+                      message: Account with id 20 not found.
+                    succeeded: false
+    delete:
+      summary: Delete
+      description: Delete
+      tags:
+        - Account Management
+      operationId: deleteAccount
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: string
+            example: '1'
+      responses:
+        '200':
+          description: '200'
+  /balance/aggregate:
+    get:
+      tags:
+        - Balance
+      summary: Get Aggregate
+      description: Retrieve aggregate account balance information.
+      operationId: getAggregate
+      parameters:
+        - name: sampleAccount
+          in: query
+          required: true
+          schema:
+            type: string
+            example: Accounts Sample 5
+        - name: targetAccount
+          in: query
+          required: true
+          schema:
+            type: string
+            example: '0'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+              examples:
+                Accounts Sample 1:
+                  value:
+                    accountName: '0000'
+                    balance: 3
+                    childs:
+                      - accountName: '0002'
+                        balance: 2
+                        childs: null
+                      - accountName: '0001'
+                        balance: 1
+                        childs: null
+                Accounts Sample 2:
+                  value:
+                    accountName: '0000'
+                    balance: 4
+                    childs:
+                      - accountName: '0001'
+                        balance: 4
+                        childs:
+                          - accountName: '0002'
+                            balance: 4
+                            childs:
+                              - accountName: '0003'
+                                balance: 4
+                                childs:
+                                  - accountName: '0004'
+                                    balance: 4
+                                    childs: null
+                Accounts Sample 3:
+                  value:
+                    accountName: '0000'
+                    balance: 270
+                    childs:
+                      - accountName: '0004'
+                        balance: 220
+                        childs:
+                          - accountName: '0006'
+                            balance: 170
+                            childs:
+                              - accountName: '0007'
+                                balance: 170
+                                childs:
+                                  - accountName: '0008'
+                                    balance: 80
+                                    childs: null
+                                  - accountName: '0009'
+                                    balance: 90
+                                    childs: null
+                          - accountName: '0005'
+                            balance: 50
+                            childs: null
+                      - accountName: '0001'
+                        balance: 50
+                        childs:
+                          - accountName: '0002'
+                            balance: 20
+                            childs: null
+                          - accountName: '0003'
+                            balance: 30
+                            childs: null
+                Accounts Sample 4:
+                  value:
+                    accountName: '000000'
+                    balance: 9910005
+                    childs:
+                      - accountName: '000002'
+                        balance: 7427000
+                        childs:
+                          - accountName: '000021'
+                            balance: 21000
+                            childs: null
+                          - accountName: '000022'
+                            balance: 22000
+                            childs: null
+                          - accountName: '000007'
+                            balance: 7000
+                            childs: null
+                          - accountName: '000006'
+                            balance: 6111000
+                            childs:
+                              - accountName: '000061'
+                                balance: 6111000
+                                childs:
+                                  - accountName: '000611'
+                                    balance: 6111000
+                                    childs:
+                                      - accountName: '006111'
+                                        balance: 6111000
+                                        childs: null
+                          - accountName: '000009'
+                            balance: 1266000
+                            childs:
+                              - accountName: '000008'
+                                balance: 254000
+                                childs:
+                                  - accountName: '000083'
+                                    balance: 83000
+                                    childs: null
+                                  - accountName: '000082'
+                                    balance: 82000
+                                    childs: null
+                                  - accountName: '000081'
+                                    balance: 81000
+                                    childs: null
+                              - accountName: '000092'
+                                balance: 921000
+                                childs:
+                                  - accountName: '000921'
+                                    balance: 921000
+                                    childs: null
+                              - accountName: '000091'
+                                balance: 91000
+                                childs: null
+                      - accountName: '000001'
+                        balance: 2483005
+                        childs:
+                          - accountName: '000012'
+                            balance: 12000
+                            childs: null
+                          - accountName: '000011'
+                            balance: 2471000
+                            childs:
+                              - accountName: '000113'
+                                balance: 113000
+                                childs: null
+                              - accountName: '000112'
+                                balance: 2247000
+                                childs:
+                                  - accountName: '001122'
+                                    balance: 1122000
+                                    childs: null
+                                  - accountName: '000004'
+                                    balance: 4000
+                                    childs: null
+                                  - accountName: '001121'
+                                    balance: 1121000
+                                    childs: null
+                              - accountName: '000111'
+                                balance: 111000
+                                childs: null
+                          - accountName: '000005'
+                            balance: 5
+                            childs: null
+                Accounts Sample 5:
+                  value:
+                    accountName: '0'
+                    balance: 5575
+                    childs:
+                      - accountName: '1'
+                        balance: 4709
+                        childs:
+                          - accountName: '11'
+                            balance: 4466
+                            childs:
+                              - accountName: '111'
+                                balance: 2223
+                                childs:
+                                  - accountName: '1112'
+                                    balance: 1112
+                                    childs: null
+                                  - accountName: '1111'
+                                    balance: 1111
+                                    childs: null
+                              - accountName: '112'
+                                balance: 2243
+                                childs:
+                                  - accountName: '1121'
+                                    balance: 1121
+                                    childs: null
+                                  - accountName: '1122'
+                                    balance: 1122
+                                    childs: null
+                          - accountName: '12'
+                            balance: 243
+                            childs:
+                              - accountName: '121'
+                                balance: 121
+                                childs: null
+                              - accountName: '122'
+                                balance: 122
+                                childs: null
+                      - accountName: '2'
+                        balance: 866
+                        childs:
+                          - accountName: '22'
+                            balance: 443
+                            childs:
+                              - accountName: '221'
+                                balance: 221
+                                childs: null
+                              - accountName: '222'
+                                balance: 222
+                                childs: null
+                          - accountName: '21'
+                            balance: 423
+                            childs:
+                              - accountName: '211'
+                                balance: 211
+                                childs: null
+                              - accountName: '212'
+                                balance: 212
+                                childs: null
+tags:
+  - name: Account Management
+    description: Operations related to account creation, update, retrieval, and deletion.
+  - name: Balance
+    description: Operations related to balance
